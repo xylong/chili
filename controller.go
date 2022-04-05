@@ -48,7 +48,7 @@ func valOf(i ...interface{}) (rv []reflect.Value) {
 	return
 }
 
-func GetHandleFunc(handler interface{}) func(ctx *gin.Context) {
+func getHandleFunc(handler interface{}) func(ctx *gin.Context) {
 	paramNum := reflect.TypeOf(handler).NumIn()
 	return func(ctx *gin.Context) {
 		// 如果只有1个参数说明是gin原生的HandlerFunc
