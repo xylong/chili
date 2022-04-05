@@ -9,3 +9,7 @@ import (
 func Login(ctx *gin.Context, param *request.LoginParam) {
 	ctx.JSON(http.StatusOK, param)
 }
+
+func Logoff(ctx *gin.Context) {
+	ctx.String(http.StatusOK, "注销")
+}

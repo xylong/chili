@@ -49,7 +49,14 @@ func valOf(i ...interface{}) (rv []reflect.Value) {
 }
 
 func GetHandleFunc(handler interface{}) func(ctx *gin.Context) {
+	paramNum := reflect.TypeOf(handler).NumIn()
 	return func(ctx *gin.Context) {
+		// 如果只有1个参数说明是gin原生的HandlerFunc
+		if paramNum == 1 {
+			reflect.ValueOf(handler).Call(valOf(ctx))
+			return
+		}
+
 		proxyHandlerFunc(ctx, handler)
 	}
 }

@@ -20,6 +20,11 @@ func (c *Chili) Post(relativePath string, handlerFunc gin.HandlerFunc) *Chili {
 	return c
 }
 
+func (c *Chili) Delete(relativePath string, handlerFunc gin.HandlerFunc) *Chili {
+	c.Engine.DELETE(relativePath, handlerFunc)
+	return c
+}
+
 // Launch 启动
 func (c *Chili) Launch() {
 	c.Run()
