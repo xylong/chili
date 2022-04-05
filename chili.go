@@ -68,8 +68,15 @@ func (c *Chili) Any(relativePath string, handler interface{}) *Chili {
 
 // handle 注册路由函数
 func (c *Chili) handle(httpMethod, relativePath string, handler interface{}) *Chili {
-	if action, ok := isAction(handler); ok {
-		c.Engine.Handle(httpMethod, relativePath, convert(action))
+	if value, ok := isAction(handler); ok {
+		// 如果只有1个参数说明是gin原生的HandlerFunc
+		if value.Type().NumIn() == oneParam {
+			c.Engine.Handle(httpMethod, relativePath, value.Interface().(func(ctx *gin.Context)))
+		} else {
+			c.Engine.Handle(httpMethod, relativePath, func(context *gin.Context) {
+				proxyHandlerFunc(context, value)
+			})
+		}
 	}
 
 	return c
