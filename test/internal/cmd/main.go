@@ -11,5 +11,7 @@ type ReqTest struct {
 }
 
 func main() {
-	chili.Ignite().Post("login", v1.Login).Launch()
+	//funcType, funcValue := reflect.TypeOf(v1.Login), reflect.ValueOf(v1.Login)
+	//fmt.Println(funcType, funcValue)
+	chili.Ignite().Post("login", chili.GetHandleFunc(v1.Login)).Launch()
 }
