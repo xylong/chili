@@ -7,18 +7,16 @@ import (
 	"reflect"
 )
 
+const (
+	// 上下文类型
+	contextType = "gin.Context"
+)
+
 // proxyHandlerFunc 根据函数参数实现自动创建
-// 通过反射 handlerFunc 然后获取函数的第二个参数即可拿到 Type 然后再通过反射创建实例
-func proxyHandlerFunc(ctx *gin.Context, handleFunc interface{}) {
-	funcType := reflect.TypeOf(handleFunc)
-
-	// 判断是否是func
-	if funcType.Kind() != reflect.Func {
-		panic("the route handlerFunc must be a function")
-	}
-
+// 获取函数的第二个参数Type，然后再通过反射创建实例
+func proxyHandlerFunc(ctx *gin.Context, value reflect.Value) {
 	// 获取第二个参数的类型，并创建实例
-	paramType := funcType.In(1).Elem()
+	paramType := value.Type().In(1).Elem()
 	param := reflect.New(paramType).Interface()
 
 	// 参数绑定
@@ -37,7 +35,7 @@ func proxyHandlerFunc(ctx *gin.Context, handleFunc interface{}) {
 	}
 
 	// 调用真实handleFunc
-	reflect.ValueOf(handleFunc).Call(valOf(ctx, param))
+	value.Call(valOf(ctx, param))
 }
 
 func valOf(i ...interface{}) (rv []reflect.Value) {
@@ -48,15 +46,37 @@ func valOf(i ...interface{}) (rv []reflect.Value) {
 	return
 }
 
-func getHandleFunc(handler interface{}) func(ctx *gin.Context) {
-	paramNum := reflect.TypeOf(handler).NumIn()
+// convert 将路由函数转为gin.HandlerFunc
+func convert(value reflect.Value) func(ctx *gin.Context) {
+	paramNum := value.Type().NumIn()
 	return func(ctx *gin.Context) {
 		// 如果只有1个参数说明是gin原生的HandlerFunc
 		if paramNum == 1 {
-			reflect.ValueOf(handler).Call(valOf(ctx))
+			value.Call(valOf(ctx))
 			return
 		}
 
-		proxyHandlerFunc(ctx, handler)
+		proxyHandlerFunc(ctx, value)
 	}
+}
+
+// isAction 判断是否为控制器方法
+func isAction(handler interface{}) (value reflect.Value, ok bool) {
+	funcType := reflect.TypeOf(handler)
+
+	if funcType.Kind() != reflect.Func {
+		return
+	}
+
+	// 判断第一个参数是否为*gin.Context
+	paramNum := funcType.NumIn()
+	if paramNum == 0 {
+		return
+	}
+
+	if t := funcType.In(0); t.Kind() == reflect.Ptr && t.Elem().String() == contextType {
+		value, ok = reflect.ValueOf(handler), true
+	}
+
+	return
 }

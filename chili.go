@@ -16,51 +16,62 @@ func Ignite() *Chili {
 	return chili
 }
 
+// Get get请求
 func (c *Chili) Get(relativePath string, handler interface{}) *Chili {
 	c.handle(http.MethodGet, relativePath, handler)
 	return c
 }
 
+// Post post请求
 func (c *Chili) Post(relativePath string, handler interface{}) *Chili {
 	c.handle(http.MethodPost, relativePath, handler)
 	return c
 }
 
+// Delete delete请求
 func (c *Chili) Delete(relativePath string, handler interface{}) *Chili {
 	c.handle(http.MethodDelete, relativePath, handler)
 	return c
 }
 
+// Patch patch请求
 func (c *Chili) Patch(relativePath string, handler interface{}) *Chili {
 	c.handle(http.MethodPatch, relativePath, handler)
 	return c
 }
 
+// Put put请求
 func (c *Chili) Put(relativePath string, handler interface{}) *Chili {
 	c.handle(http.MethodPut, relativePath, handler)
 	return c
 }
 
+// Options options请求
 func (c *Chili) Options(relativePath string, handler interface{}) *Chili {
 	c.handle(http.MethodOptions, relativePath, handler)
 	return c
 }
 
+// Any 任意类型请求
 func (c *Chili) Any(relativePath string, handler interface{}) *Chili {
-	c.Get(relativePath, handler)
-	c.Post(relativePath, handler)
-	c.Delete(relativePath, handler)
-	c.Patch(relativePath, handler)
-	c.Put(relativePath, handler)
-	c.Options(relativePath, handler)
+	c.handle(http.MethodGet, relativePath, handler)
+	c.handle(http.MethodPost, relativePath, handler)
+	c.handle(http.MethodDelete, relativePath, handler)
+	c.handle(http.MethodPatch, relativePath, handler)
+	c.handle(http.MethodPut, relativePath, handler)
+	c.handle(http.MethodOptions, relativePath, handler)
 	c.handle(http.MethodHead, relativePath, handler)
 	c.handle(http.MethodConnect, relativePath, handler)
 	c.handle(http.MethodTrace, relativePath, handler)
 	return c
 }
 
-func (c *Chili) handle(httpMethod, relativePath string, handlerFunc interface{}) *Chili {
-	c.Engine.Handle(httpMethod, relativePath, getHandleFunc(handlerFunc))
+// handle 注册路由函数
+func (c *Chili) handle(httpMethod, relativePath string, handler interface{}) *Chili {
+	if action, ok := isAction(handler); ok {
+		c.Engine.Handle(httpMethod, relativePath, convert(action))
+	}
+
 	return c
 }
 
