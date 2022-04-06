@@ -1,6 +1,9 @@
 package chili
 
-import "github.com/go-playground/validator/v10"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
+)
 
 var v *validator.Validate
 
@@ -19,4 +22,9 @@ func Validate(param interface{}) (bool, string) {
 	}
 
 	return true, ""
+}
+
+// Param 参数
+type Param interface {
+	Bind(*gin.Context) error
 }

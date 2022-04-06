@@ -1,6 +1,7 @@
 package chili
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"reflect"
@@ -22,16 +23,16 @@ func proxyHandlerFunc(ctx *gin.Context, value reflect.Value) {
 	param := reflect.New(paramType).Interface()
 
 	// 参数绑定
-	err := ctx.ShouldBind(param)
-	if err != nil {
-		ctx.String(http.StatusBadRequest, "请求参数异常")
-		return
+	var err error
+	if p, ok := param.(Param); ok {
+		err = p.Bind(ctx)
+	} else {
+		err = ctx.ShouldBind(param)
 	}
 
-	// 参数验证
-	ok, msg := Validate(param)
-	if !ok {
-		ctx.String(http.StatusBadRequest, msg)
+	if err != nil {
+		fmt.Println(err)
+		ctx.String(http.StatusBadRequest, "请求参数异常")
 		return
 	}
 

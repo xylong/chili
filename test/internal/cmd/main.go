@@ -7,6 +7,7 @@ import (
 
 func main() {
 	chili.Ignite().
+		Post("register", v1.Register).
 		Post("login", v1.Login).
 		Delete("logoff", v1.Logoff).
 		Launch()
