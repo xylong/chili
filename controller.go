@@ -2,7 +2,6 @@ package chili
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"reflect"
 )
@@ -13,11 +12,11 @@ const (
 	twoParam
 
 	// 上下文类型
-	contextType = "gin.Context"
+	contextType = "chili.Context"
 )
 
-// proxyHandlerFunc 根据函数参数实现自动创建
-func proxyHandlerFunc(ctx *gin.Context, value reflect.Value) {
+// convert 根据函数参数实现自动创建
+func convert(ctx *Context, value reflect.Value) {
 	// 获取第二个参数的类型，并创建实例
 	paramType := value.Type().In(twoParam - 1).Elem()
 	param := reflect.New(paramType).Interface()

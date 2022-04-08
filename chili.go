@@ -13,6 +13,8 @@ type Chili struct {
 // Ignite 初始化
 func Ignite() *Chili {
 	chili := &Chili{Engine: gin.New()}
+	chili.Use(gin.Logger(), gin.Recovery())
+
 	return chili
 }
 
@@ -69,14 +71,14 @@ func (c *Chili) Any(relativePath string, handler interface{}) *Chili {
 // handle 注册路由函数
 func (c *Chili) handle(httpMethod, relativePath string, handler interface{}) *Chili {
 	if value, ok := isAction(handler); ok {
-		// 如果只有1个参数说明是gin原生的HandlerFunc
-		if value.Type().NumIn() == oneParam {
-			c.Engine.Handle(httpMethod, relativePath, value.Interface().(func(ctx *gin.Context)))
-		} else {
-			c.Engine.Handle(httpMethod, relativePath, func(context *gin.Context) {
-				proxyHandlerFunc(context, value)
-			})
-		}
+		// 判断是否为gin原生的HandlerFunc
+		c.Engine.Handle(httpMethod, relativePath, func(context *gin.Context) {
+			if value.Type().NumIn() == oneParam {
+				value.Interface().(func(*Context))(&Context{context})
+			} else {
+				convert(&Context{context}, value)
+			}
+		})
 	}
 
 	return c
