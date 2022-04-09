@@ -7,7 +7,6 @@ import (
 // Chili 脚手架核心
 type Chili struct {
 	*gin.Engine
-	group *Group
 }
 
 // Ignite 初始化
@@ -19,9 +18,11 @@ func Ignite() *Chili {
 }
 
 // Group 路由分组
-func (c *Chili) Group(group string, callback func(group *Group)) *Chili {
-	c.group = NewGroup(c.Engine.Group(group))
-	callback(c.group)
+func (c *Chili) Group(group string, callback func(group *Group), middlewares ...middleware) *Chili {
+	g := NewGroup(c.Engine.Group(group))
+	g.middlewares = append(g.middlewares, middlewares...)
+	callback(g)
+
 	return c
 }
 

@@ -20,3 +20,18 @@ func Login(ctx *chili.Context, param *request.LoginParam) {
 func Logoff(ctx *chili.Context) {
 	ctx.String(http.StatusOK, ctx.Domain())
 }
+
+// Me 个人信息
+func Me(ctx *chili.Context) {
+	ctx.String(http.StatusOK, "个人信息")
+}
+
+// Show 用户信息
+func Show(ctx *chili.Context) {
+	ctx.String(http.StatusOK, "用户信息")
+}
+
+// Update 更新个人信息
+func Update(ctx *chili.Context) {
+
+}

@@ -1,8 +1,8 @@
 package request
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"github.com/xylong/chili"
 )
 
 // RegisterParam 注册参数
@@ -17,6 +17,6 @@ type LoginParam struct {
 	Password string `json:"password" form:"password" binding:"required,min=6,max=18"`
 }
 
-func (p *LoginParam) Bind(ctx *gin.Context) error {
+func (p *LoginParam) Bind(ctx *chili.Context) error {
 	return ctx.ShouldBindWith(p, binding.Form)
 }

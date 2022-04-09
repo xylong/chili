@@ -11,6 +11,7 @@ import (
 type Group struct {
 	*gin.RouterGroup
 	group string
+	middlewares
 }
 
 func NewGroup(routerGroup *gin.RouterGroup) *Group {
@@ -18,9 +19,10 @@ func NewGroup(routerGroup *gin.RouterGroup) *Group {
 }
 
 // Group 路由分组，通过闭包处理路由前缀和中间件
-func (g *Group) Group(group string, callback func(*Group)) {
+func (g Group) Group(group string, callback func(*Group), middlewares ...middleware) {
+	g.middlewares = append(g.middlewares, middlewares...)
 	g.group += fmt.Sprintf("/%s", strings.Trim(group, "/"))
-	callback(g)
+	callback(&g)
 }
 
 // Get get请求
@@ -31,6 +33,12 @@ func (g *Group) Get(relativePath string, handler interface{}) *Group {
 
 // Post post请求
 func (g *Group) Post(relativePath string, handler interface{}) *Group {
+	g.handle(http.MethodPost, relativePath, handler)
+	return g
+}
+
+// Patch patch请求
+func (g *Group) Patch(relativePath string, handler interface{}) *Group {
 	g.handle(http.MethodPost, relativePath, handler)
 	return g
 }
@@ -46,10 +54,13 @@ func (g *Group) handle(httpMethod, relativePath string, handler interface{}) *Gr
 	if value, ok := isAction(handler); ok {
 		// 判断是否为gin原生的HandlerFunc
 		g.Handle(httpMethod, fmt.Sprintf("%s/%s", g.group, relativePath), func(context *gin.Context) {
+			ctx := &Context{context}
+			g.middlewares.before(ctx)
+
 			if value.Type().NumIn() == oneParam {
-				value.Interface().(func(*Context))(&Context{context})
+				value.Interface().(func(*Context))(ctx)
 			} else {
-				convert(&Context{context}, value)
+				convert(ctx, value)
 			}
 		})
 	}
