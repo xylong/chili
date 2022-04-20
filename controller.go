@@ -15,8 +15,8 @@ const (
 	contextType = "chili.Context"
 )
 
-// convert 根据函数参数实现自动创建
-func convert(ctx *Context, value reflect.Value) {
+// convert1 根据函数参数实现自动创建
+func convert1(ctx *Context, value reflect.Value) {
 	// 获取第二个参数的类型，并创建实例
 	paramType := value.Type().In(twoParam - 1).Elem()
 	param := reflect.New(paramType).Interface()

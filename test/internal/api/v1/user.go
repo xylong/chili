@@ -7,8 +7,8 @@ import (
 )
 
 // Register 注册
-func Register(ctx *chili.Context, param *request.RegisterParam) {
-	ctx.JSON(http.StatusOK, param)
+func Register(ctx *chili.Context) string {
+	return "hello"
 }
 
 // Login 登录
