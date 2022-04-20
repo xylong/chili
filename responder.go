@@ -15,11 +15,11 @@ type Responder interface {
 	Return() func(*Context)
 }
 
-type StringResponder func(*Context) string
+type StringResponder func(*Context, Param) string
 
 func (r StringResponder) Return() func(*Context) {
 	return func(context *Context) {
-		context.String(http.StatusOK, r(context))
+		context.String(http.StatusOK, r(context, nil))
 	}
 }
 
@@ -31,6 +31,22 @@ func getResponderList() []Responder {
 	})
 
 	return responderList
+}
+
+type (
+	handlerFunc func(...Param) func(output)
+	output      func(*Context, interface{})
+)
+
+func wrap(ctx *Context) handlerFunc {
+	return func(param ...Param) func(output) {
+		// todo 参数绑定验证
+
+		// todo 结果处理
+		return func(o output) {
+			o(ctx, "a")
+		}
+	}
 }
 
 func convert(handler interface{}) func(*Context) {

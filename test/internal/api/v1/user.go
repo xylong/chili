@@ -1,13 +1,15 @@
 package v1
 
 import (
+	"fmt"
 	"github.com/xylong/chili"
 	"github.com/xylong/chili/test/internal/request"
 	"net/http"
 )
 
 // Register 注册
-func Register(ctx *chili.Context) string {
+func Register(param *request.RegisterParam) string {
+	fmt.Println(param)
 	return "hello"
 }
 

@@ -11,6 +11,10 @@ type RegisterParam struct {
 	Password string `json:"password" form:"password" binding:"required,min=6,max=18"`
 }
 
+func (p *RegisterParam) Bind(ctx *chili.Context) error {
+	return ctx.ShouldBindWith(p, binding.Form)
+}
+
 // LoginParam 登录参数
 type LoginParam struct {
 	Name     string `json:"name" form:"name" binding:"required,alphanum"`
