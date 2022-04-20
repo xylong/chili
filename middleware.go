@@ -1,10 +1,5 @@
 package chili
 
-import (
-	"github.com/gin-gonic/gin"
-	"net/http"
-)
-
 type middlewares []middleware
 
 // middleware 中间件
@@ -19,9 +14,7 @@ type middleware interface {
 func (m middlewares) before(ctx *Context) {
 	for _, f := range m {
 		if err := f.Before(ctx); err != nil {
-			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			panic(err)
 		}
 	}
-
-	ctx.Next()
 }

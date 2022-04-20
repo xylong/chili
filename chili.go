@@ -12,7 +12,7 @@ type Chili struct {
 // Ignite 初始化
 func Ignite() *Chili {
 	chili := &Chili{Engine: gin.New()}
-	chili.Use(gin.Logger(), gin.Recovery())
+	chili.Use(gin.Logger(), exception())
 
 	return chili
 }

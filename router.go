@@ -1,7 +1,6 @@
 package chili
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
@@ -21,7 +20,7 @@ func NewGroup(routerGroup *gin.RouterGroup) *Group {
 // Group 路由分组，通过闭包处理路由前缀和中间件
 func (g Group) Group(group string, callback func(*Group), middlewares ...middleware) {
 	g.middlewares = append(g.middlewares, middlewares...)
-	g.group += fmt.Sprintf("/%s", strings.Trim(group, "/"))
+	g.group += group + "/"
 	callback(&g)
 }
 
@@ -53,7 +52,7 @@ func (g *Group) Delete(relativePath string, handler interface{}) *Group {
 func (g *Group) handle(httpMethod, relativePath string, handler interface{}) *Group {
 	if value, ok := isAction(handler); ok {
 		// 判断是否为gin原生的HandlerFunc
-		g.Handle(httpMethod, fmt.Sprintf("%s/%s", g.group, relativePath), func(context *gin.Context) {
+		g.Handle(httpMethod, strings.TrimRight(g.group+"/"+relativePath, "/"), func(context *gin.Context) {
 			ctx := &Context{context}
 			g.middlewares.before(ctx)
 

@@ -15,7 +15,7 @@ func NewPermission() *Permission {
 
 func (p *Permission) Before(ctx *chili.Context) error {
 	fmt.Println("->p")
-	return nil
+	return fmt.Errorf("test middleware error")
 }
 
 func (p *Permission) After(data interface{}) (interface{}, error) {
