@@ -12,17 +12,11 @@ type Chili struct {
 // Ignite 初始化
 func Ignite() *Chili {
 	chili := &Chili{Engine: gin.New()}
-	chili.Use(gin.Logger(), exception())
 
 	return chili
 }
 
-// Group 路由分组
-func (c *Chili) Group(group string, callback func(group *Group), middlewares ...middleware) *Chili {
-	g := NewGroup(c.Engine.Group(group))
-	g.middlewares = append(g.middlewares, middlewares...)
-	callback(g)
-
+func (c *Chili) Group() *Chili {
 	return c
 }
 

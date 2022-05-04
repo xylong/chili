@@ -2,38 +2,33 @@ package v1
 
 import (
 	"fmt"
-	"github.com/xylong/chili"
-	"github.com/xylong/chili/test/internal/request"
+	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
-// Register 注册
-func Register(param *request.RegisterParam) string {
-	fmt.Println(param)
-	return "hello"
+type UserController struct {
 }
 
-// Login 登录
-func Login(ctx *chili.Context, param *request.LoginParam) {
-	ctx.JSON(http.StatusOK, param)
+// @Summary      Show an account
+// @Description  get string by ID
+// @Tags         accounts
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Account ID"
+// @Success      200  {string}  gin.H{"code":200,"data":null,"msg":"ok"}
+// @Router       /users/{id} [get]
+func (c *UserController) ShowAccount(ctx *gin.Context) {
+	id := ctx.Param("id")
+	aid, err := strconv.Atoi(id)
+	fmt.Println(aid)
+	if err != nil {
+		ctx.JSONP(400, gin.H{"code": 200, "data": nil, "msg": "ok"})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"code": 200, "data": "foo", "msg": "ok"})
 }
 
-// Logoff 注销
-func Logoff(ctx *chili.Context) {
-	ctx.String(http.StatusOK, ctx.Domain())
-}
-
-// Me 个人信息
-func Me(ctx *chili.Context) {
-	ctx.String(http.StatusOK, "个人信息")
-}
-
-// Show 用户信息
-func Show(ctx *chili.Context) {
-	ctx.String(http.StatusOK, "用户信息")
-}
-
-// Update 更新个人信息
-func Update(ctx *chili.Context) {
-
+func (c *UserController) Register(ctx *gin.Context) {
+	ctx.JSONP(200, gin.H{"code": 200, "data": nil, "msg": "ok"})
 }
