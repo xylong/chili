@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/xylong/chili"
 	_ "github.com/xylong/chili/docs"
 	v12 "github.com/xylong/chili/test/internal/api/v1"
 )
@@ -20,20 +20,19 @@ import (
 // @license.name  Apache 2.0
 // @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host      localhost:8080
+// @host      127.0.0.1:8080
 // @BasePath  /v1
 
 func main() {
-	r := gin.Default()
+	chili.Ignite().
+		Group("swagger", func(group *chili.Group) {
+			group.GET("/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+		}).
+		Group("v1", func(v1 *chili.Group) {
+			controller := &v12.UserController{}
 
-	controller := &v12.UserController{}
-	v1 := r.Group("v1")
-	{
-		v1.GET("users/:id", controller.ShowAccount)
-		v1.GET("register", controller.Register)
-	}
-
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-
-	r.Run()
+			v1.GET("users/:id", controller.ShowAccount)
+			v1.POST("register", controller.Register)
+		}).
+		Launch()
 }
