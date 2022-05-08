@@ -1,9 +1,8 @@
 package v1
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
-	"net/http"
+	"github.com/xylong/chili"
 	"strconv"
 )
 
@@ -18,15 +17,14 @@ type UserController struct {
 // @Param        id   path      int  true  "Account ID"
 // @Success      200  {string}  gin.H{"code":200,"data":null,"msg":"ok"}
 // @Router       /users/{id} [get]
-func (c *UserController) ShowAccount(ctx *gin.Context) {
+func (c *UserController) ShowAccount(ctx *gin.Context) *chili.Response {
 	id := ctx.Param("id")
 	aid, err := strconv.Atoi(id)
-	fmt.Println(aid)
 	if err != nil {
-		ctx.JSONP(400, gin.H{"code": 200, "data": nil, "msg": "ok"})
-		return
+		return chili.R().Json(gin.H{"code": 200, "data": nil, "msg": "ok"})
 	}
-	ctx.JSON(http.StatusOK, gin.H{"code": 200, "data": "foo", "msg": "ok"})
+
+	return chili.R().Json(gin.H{"code": 200, "data": aid, "msg": "ok"})
 }
 
 func (c *UserController) Register(ctx *gin.Context) {
