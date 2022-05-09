@@ -1,30 +1,45 @@
 package chili
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"net/http"
+	"reflect"
+)
 
-type Response struct {
-	data interface{}
+var ResponderList []Responder
+
+func init() {
+	ResponderList = []Responder{
+		new(StringResponder),
+	}
 }
 
-func R() *Response {
-	return &Response{}
+// Responder 响应器
+type Responder interface {
+	Return() gin.HandlerFunc
 }
 
-func (r *Response) Json(data gin.H) *Response {
-	r.data = data
-	return r
+type (
+	StringResponder func(*gin.Context) string
+	JsonResponder   func(*gin.Context) gin.H
+)
+
+func (r StringResponder) Return() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		context.String(http.StatusOK, r(context))
+	}
 }
 
-func (r *Response) String(data string) *Response {
-	r.data = data
-	return r
-}
+func convert(handler interface{}) gin.HandlerFunc {
+	value := reflect.ValueOf(handler)
 
-func (r *Response) Byte(data []byte) *Response {
-	r.data = data
-	return r
-}
+	for _, responder := range ResponderList {
+		val := reflect.ValueOf(responder).Elem()
+		if value.Type().ConvertibleTo(val.Type()) {
+			val.Set(value)
+			return val.Interface().(Responder).Return()
+		}
+	}
 
-func (r *Response) Data() interface{} {
-	return r.data
+	return nil
 }
