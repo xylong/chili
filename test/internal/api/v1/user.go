@@ -25,3 +25,7 @@ func (c *UserController) ShowAccount(ctx *chili.Context) chili.Json {
 func (c *UserController) Register(ctx *chili.Context) string {
 	return "foo"
 }
+
+func (c *UserController) Logoff(ctx *chili.Context) {
+	ctx.String(200, "注销")
+}

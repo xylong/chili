@@ -34,6 +34,7 @@ func main() {
 
 			v1.GET("users/:id", controller.ShowAccount)
 			v1.POST("register", controller.Register)
+			v1.DELETE("logoff", controller.Logoff)
 		}).
 		Launch()
 }

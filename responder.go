@@ -12,6 +12,7 @@ func init() {
 	responderList = []Responder{
 		(stringResponder)(nil),
 		(jsonResponder)(nil),
+		(defaultResponder)(nil),
 	}
 }
 
@@ -36,6 +37,14 @@ type (
 func (r jsonResponder) respond() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		context.JSON(http.StatusOK, r(NewContext(context)))
+	}
+}
+
+type defaultResponder func(*Context)
+
+func (r defaultResponder) respond() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		r(NewContext(context))
 	}
 }
 

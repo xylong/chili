@@ -34,6 +34,10 @@ func (g *Group) POST(relativePath string, handler interface{}) {
 	g.handle(http.MethodPost, relativePath, handler)
 }
 
+func (g *Group) DELETE(relativePath string, handler interface{}) {
+	g.handle(http.MethodDelete, relativePath, handler)
+}
+
 func (g *Group) handle(httpMethod, relativePath string, handler interface{}) {
 	if f := convert(handler); f != nil {
 		g.Handle(httpMethod, strings.TrimRight(g.group+"/"+relativePath, "/"), f)
