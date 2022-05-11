@@ -10,8 +10,8 @@ var responderList []Responder
 
 func init() {
 	responderList = []Responder{
-		new(stringResponder),
-		new(mapResponder),
+		(stringResponder)(nil),
+		(jsonResponder)(nil),
 	}
 }
 
@@ -20,10 +20,7 @@ type Responder interface {
 	respond() gin.HandlerFunc
 }
 
-type (
-	stringResponder func(*Context) string
-	mapResponder    func(*Context) map[string]interface{}
-)
+type stringResponder func(*Context) string
 
 func (r stringResponder) respond() gin.HandlerFunc {
 	return func(context *gin.Context) {
@@ -31,7 +28,12 @@ func (r stringResponder) respond() gin.HandlerFunc {
 	}
 }
 
-func (r mapResponder) respond() gin.HandlerFunc {
+type (
+	Json          interface{}
+	jsonResponder func(*Context) Json
+)
+
+func (r jsonResponder) respond() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		context.JSON(http.StatusOK, r(NewContext(context)))
 	}
@@ -41,10 +43,9 @@ func convert(handler interface{}) gin.HandlerFunc {
 	value := reflect.ValueOf(handler)
 
 	for _, responder := range responderList {
-		val := reflect.ValueOf(responder).Elem()
-		if value.Type().ConvertibleTo(val.Type()) {
-			val.Set(value)
-			return val.Interface().(Responder).respond()
+		t := reflect.TypeOf(responder)
+		if value.Type().ConvertibleTo(t) {
+			return value.Convert(t).Interface().(Responder).respond()
 		}
 	}
 

@@ -23,10 +23,11 @@ import (
 // @host      127.0.0.1:8080
 // @BasePath  /v1
 
+//go:generate swag init --parseDependency  --parseDepth=6 -g test/internal/cmd/main.go
 func main() {
 	chili.Ignite().
-		Group("swagger", func(group *chili.Group) {
-			group.GET("/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+		Group("swagger", func(swagger *chili.Group) {
+			swagger.GET("/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 		}).
 		Group("v1", func(v1 *chili.Group) {
 			controller := &v12.UserController{}

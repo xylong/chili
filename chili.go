@@ -26,9 +26,7 @@ func Ignite() *Chili {
 
 // Group 路由分组
 func (c *Chili) Group(group string, callback func(group *Group)) *Chili {
-	g := NewGroup(c.Engine.Group(group))
-	callback(g)
-
+	callback(NewGroup(c.Engine.Group(group)))
 	return c
 }
 

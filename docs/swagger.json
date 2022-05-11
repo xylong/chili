@@ -20,21 +20,18 @@
     "paths": {
         "/users/{id}": {
             "get": {
-                "description": "get string by ID",
-                "consumes": [
-                    "application/json"
-                ],
+                "description": "用户详情",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "accounts"
+                    "用户"
                 ],
-                "summary": "Show an account",
+                "summary": "详情",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "Account ID",
+                        "type": "string",
+                        "description": "用户🆔",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -42,11 +39,72 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "code\":200,\"data\":null,\"msg\":\"ok\"}",
+                        "description": "success",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/user.User"
                         }
                     }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "gorm.DeletedAt": {
+            "type": "object",
+            "properties": {
+                "time": {
+                    "type": "string"
+                },
+                "valid": {
+                    "description": "Valid is true if Time is not NULL",
+                    "type": "boolean"
+                }
+            }
+        },
+        "user.User": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "birthday": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "openid1": {
+                    "type": "string"
+                },
+                "openid2": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "unionid": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
                 }
             }
         }

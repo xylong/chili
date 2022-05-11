@@ -3,6 +3,7 @@ package chili
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strings"
 )
 
 // Group 路由组
@@ -16,21 +17,25 @@ func NewGroup(routerGroup *gin.RouterGroup) *Group {
 }
 
 // Group 路由分组
-func (g Group) Group(group string, callback func(group *Group)) {
+func (g Group) Group(group string, callback func(*Group)) {
 	g.group += group + "/"
 	callback(&g)
 }
 
-func (g *Group) handle(httpMethod, relativePath string, handler interface{}) {
-	if f := convert(handler); f != nil {
-		g.Handle(httpMethod, relativePath, f)
-	}
-}
-
 func (g *Group) GET(relativePath string, handler interface{}) {
-	g.handle(http.MethodGet, relativePath, handler)
+	if relativePath != "/*any" {
+		g.handle(http.MethodGet, relativePath, handler)
+	} else {
+		g.Handle(http.MethodGet, relativePath, handler.(gin.HandlerFunc))
+	}
 }
 
 func (g *Group) POST(relativePath string, handler interface{}) {
 	g.handle(http.MethodPost, relativePath, handler)
+}
+
+func (g *Group) handle(httpMethod, relativePath string, handler interface{}) {
+	if f := convert(handler); f != nil {
+		g.Handle(httpMethod, strings.TrimRight(g.group+"/"+relativePath, "/"), f)
+	}
 }

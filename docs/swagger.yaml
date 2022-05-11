@@ -1,4 +1,44 @@
 basePath: /v1
+definitions:
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
+    type: object
+  user.User:
+    properties:
+      avatar:
+        type: string
+      birthday:
+        type: string
+      created_at:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      email:
+        type: string
+      gender:
+        type: integer
+      id:
+        type: integer
+      nickname:
+        type: string
+      openid1:
+        type: string
+      openid2:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      unionid:
+        type: string
+      updated_at:
+        type: string
+    type: object
 host: 127.0.0.1:8080
 info:
   contact:
@@ -15,23 +55,21 @@ info:
 paths:
   /users/{id}:
     get:
-      consumes:
-      - application/json
-      description: get string by ID
+      description: 用户详情
       parameters:
-      - description: Account ID
+      - description: "用户\U0001F194"
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
         "200":
-          description: code":200,"data":null,"msg":"ok"}
+          description: success
           schema:
-            type: string
-      summary: Show an account
+            $ref: '#/definitions/user.User'
+      summary: 详情
       tags:
-      - accounts
+      - 用户
 swagger: "2.0"
