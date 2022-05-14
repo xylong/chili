@@ -5,8 +5,7 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/xylong/chili"
 	_ "github.com/xylong/chili/docs"
-	v12 "github.com/xylong/chili/test/internal/api/v1"
-	"github.com/xylong/chili/test/internal/dto"
+	"github.com/xylong/chili/test/internal/router"
 )
 
 // @title           Swagger Example API
@@ -30,17 +29,6 @@ func main() {
 		Group("swagger", func(swagger *chili.Group) {
 			swagger.GET("/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 		}).
-		Group("v1", func(v1 *chili.Group) {
-			controller := &v12.UserController{}
-
-			v1.GET("users/:id", controller.ShowAccount)
-			v1.POST("register", controller.Register)
-			v1.POST("login", chili.BindJson[dto.LoginParam](func(t *dto.LoginParam, ctx *chili.Context) {
-				ctx.JSON(200, t)
-			}, func(t *dto.LoginParam, err error, ctx *chili.Context) {
-				ctx.AbortWithStatusJSON(400, map[string]interface{}{"error": err.Error()})
-			}))
-			v1.DELETE("logoff", controller.Logoff)
-		}).
+		Group("v1", router.V1).
 		Launch()
 }
