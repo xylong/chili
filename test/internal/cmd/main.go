@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/xylong/chili"
 	_ "github.com/xylong/chili/docs"
